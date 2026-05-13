@@ -57,5 +57,7 @@ int main()
     printf("arr의 주소: %p\n", arr);
     printf("p3의 값: %p\n", p3);
 
+
+
     return 0;
 }
