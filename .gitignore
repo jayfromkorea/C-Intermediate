@@ -1,0 +1,96 @@
+# Visual Studio 2022
+.vs/
+*.VC.db
+*.VC.VC.opendb
+*.VC.opendb
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+ARM/
+ARM64/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+out/build/
+
+# Visual Studio generated files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# IntelliSense
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.sdf
+*.cachefile
+
+# MSBuild
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.idb
+*.ilk
+*.tlog
+*.lastbuildstate
+*.log
+*.tmp
+*.rsp
+
+# Executables & libraries
+*.exe
+*.dll
+*.lib
+*.exp
+
+# Static analysis
+*.nativecodeanalysis.xml
+
+# Test Results
+TestResults/
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+
+# Profiling
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# ReSharper
+_ReSharper*/
+*.ReSharper
+
+# Rider
+.idea/
+
+# VSCode
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Optional: generated assets
+*.generated.h
+
+# Crash dumps
+*.dmp
+
+# Temporary files
+*.tmp
+*.temp
+~$*
