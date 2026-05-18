@@ -11,10 +11,15 @@ void print_string(const char* sz) {
         }
         else {
             printf("%c", sz[i]);
-        }             
+        }
         //sz문자열의 모든 내용들을 전부 대문자로 출력하세요
     }
     printf("\n");
+}
+
+// 문자열 배열을 받아서 해당 문자열의 글자를 모두 대문자로 변환하는 함수를 구현하세요
+void capitalaize() {
+
 }
 
 int main()
