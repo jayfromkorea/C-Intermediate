@@ -14,7 +14,7 @@ void randomize() {
     // randomize: 랜덤초기화
     // time(NULL): 이 컴퓨터의 현재 시간값
     time_t t;
-    srand((unsigned int)time(NULL));   
+    srand((unsigned int)time(NULL));   // time() returns long long, srand() takes unsigned int as an argument --> needs casting
 }
 
 // 순차 탐색 함수
@@ -49,7 +49,7 @@ void make_random_array(int arr[], int count) { // 항상 배열의 크기를 넘
     int i = 0;
     while (i < count) {
         tmp = rand() % LOTTO_MAX +1;
-        if (find_value(arr, count, tmp)) arr[i++] = tmp;
+        if (find_value(arr, count, tmp) == -1) arr[i++] = tmp;
     }
 }
 
@@ -84,17 +84,21 @@ void bubble_sort(int arr[], int count) {
 void make_random_matrix(int(*arr)[LOTTO_COUNT], int rows) {
     for (int i = 0; i < rows; i++) {
         make_random_array(arr[i], LOTTO_COUNT);
-        bubble_sort(arr[i], LOTTO_COUNT);
-        
+        bubble_sort(arr[i], LOTTO_COUNT);        
     }
 }
 
-int matched_count(int lotto[], int user[], int count) {
-    int ret = 0;
+int matched_count(int lotto[], int matched_number[], int user[], int count) {
+    
+    int idx = 0;
     for (int i = 0; i < count; i++) {
-        if (binary_search(lotto, count, user[i]) >= 0)  ret++;
+        int matched_idx = binary_search(lotto, count, user[i]);
+        if (matched_idx >= 0) {
+            matched_number[idx] = user[i];
+            idx++;
+        }
     }
-    return ret;
+    return idx;
 }
 
 void print_matrix(int(*arr)[LOTTO_COUNT], int rows) {
@@ -124,10 +128,13 @@ int main()
     // 구매자 번호, 2차원 배열 --> 각 원소들은 1차원 배열이다.
     int users[LOTTO_ROWS][LOTTO_COUNT] = { 0 };
     make_random_matrix(users, LOTTO_ROWS);
+    int matched_number[LOTTO_COUNT] = { 0 };
     for (int i = 0; i < LOTTO_ROWS; i++) {
         print_array(users[i], LOTTO_COUNT);
-        int result = matched_count(lotto, users[i], LOTTO_COUNT);
-        printf("당첨개수: %d개\n\n", result);
+        int result = matched_count(lotto, matched_number, users[i], LOTTO_COUNT);
+        printf("당첨개수: %d개\n", result); // 맞춘 숫자 출력
+        for (int i = 0; i < result; i++) printf("당첨숫자%d번: %d\n", i+1, matched_number[i]);
+        printf("\n\n");
     }
     // print_matrix(users, LOTTO_ROWS);
 

@@ -18,8 +18,10 @@ void print_string(const char* sz) {
 }
 
 // 문자열 배열을 받아서 해당 문자열의 글자를 모두 대문자로 변환하는 함수를 구현하세요
-void capitalaize() {
-
+void capitalaize(char arr[], int len) {
+    for (int i = 0; i < len; i++) {
+        if (arr[i] >= 97 && arr[i] <= 122) arr[i] -= 32;
+    }
 }
 
 int main()
