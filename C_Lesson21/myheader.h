@@ -1,7 +1,6 @@
-// #pragma once와 아래 #ifndef #define #define와 같음
 #define _CRT_SECURE_NO_WARNINGS
 
-
+// #pragma once와 아래 #ifndef #define #define와 같음
 #ifndef ___C_LESSON_21_HEADER_H__
 #define ___C_LESSON_21_HEADER_H__
 
