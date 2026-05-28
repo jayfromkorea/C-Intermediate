@@ -128,6 +128,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="C_Lesson23.cpp" />
+    <ClCompile Include="Release_Area_Implementation.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="myheader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

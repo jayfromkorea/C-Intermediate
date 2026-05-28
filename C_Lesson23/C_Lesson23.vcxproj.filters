@@ -18,5 +18,13 @@
     <ClCompile Include="C_Lesson23.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Release_Area_Implementation.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="myheader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
