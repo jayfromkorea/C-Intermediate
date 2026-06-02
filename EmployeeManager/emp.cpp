@@ -1,30 +1,37 @@
 #include "emp.h"
 #include "error.h"
 
+void input(char* buffer, size_t len) //  사용자에게 입력을 받는 함수
+{
+	fgets(buffer, len, stdin);
+	int length = strlen(buffer);
+	buffer[length- 1] = '\n'; // \n을 \0으로 바꿔서 줄바꿈이 발생하는 상황을 제거
+}
+
 void show_menu() 
 {
 	// system(): console 명령어를 실행시켜 주는 함수
 	system("cls");	// Console 화면 clear
 
-	printf("===== 사원 관리(ver .0)=====\n");
+	printf("===== EMPLOYEE 관리(ver 1.0)=====\n");
 	printf("========================\n\n");
 
-	printf("a. 사원정보 입력\n");
-	printf("b. 사원정보 조회\n");
-	printf("c. 사원정보 수정\n");
-	printf("d. 사원정보 삭제\n");
+	printf("a. EMPLOYEE_TITLEINFORMATION CREATE\n");
+	printf("b. EMPLOYEE_TITLEINFORMATION READ\n");
+	printf("c. EMPLOYEE_TITLEINFORMATION UPDATE\n");
+	printf("d. EMPLOYEE_TITLEINFORMATION DELETE\n");
 	printf("========================\n\n");
 
-	printf("e. 부서 입력\n");
-	printf("f. 부서 조회\n");
-	printf("g. 부서 수정\n");
-	printf("h. 부서 삭제\n");
+	printf("e. INFORMATION CREATE\n");
+	printf("f. DEPARTMENT READ\n");
+	printf("g. DEPARTMENT UPDATE\n");
+	printf("h. DEPARTMENT DELETE\n");
 	printf("========================\n\n");
 
-	printf("i. 직급 입력\n");
-	printf("j. 직급 조회\n");
-	printf("k. 직급 수정\n");
-	printf("l. 직급 삭제\n");
+	printf("i. RANK CREATE\n");
+	printf("j. RANK READ\n");
+	printf("k. RANK UPDATE\n");
+	printf("l. RANK DELETE\n");
 	printf("========================\n\n");
 
 	printf("x. 프로그램 종료\n");
@@ -33,9 +40,9 @@ void show_menu()
 int select_menu()
 {
 	printf("\n\n");
-	printf("메뉴를 선택 입력하세요 >>> ");
+	printf("메뉴를 선택 CREATE하세요 >>> ");
 
-	// _getch(): 문자 하나를 입력하면 즉시 입력된 값을 반환하는 함수
+	// _getch(): 문자 하나를 CREATE하면 즉시 CREATE된 값을 반환하는 함수
 	int menu = _getch();
 
 	return menu;
@@ -43,7 +50,7 @@ int select_menu()
 
 int employee_procedure() {
 	
-	// 각 정보들을 저장하는 배열
+	// 각 INFORMATION들을 저장하는 배열
 	EMPLOYEE* pEmp = NULL;
 	size_t emp_count = 0;
 
@@ -75,9 +82,12 @@ int employee_procedure() {
 			case 'e':
 				part_count = input_part(&pPart, part_count); 
 				break;
-			case 'f': print_part(pPart, part_count);
+			case 'f':
+				part_count = input_part_insert(&pPart, part_count, 1);
 				break;
 			case 'g':
+				print_part(pPart, part_count);
+				break;
 			case 'h': break;
 
 			case 'i':
@@ -95,7 +105,7 @@ int employee_procedure() {
 	return 0;
 }
 
-// 나중에 inser 기능도 구현!!!!!!!
+// 나중에 insert 기능도 구현!!!!!!!
 size_t input_part(PART** ppNewPart, size_t count) 
 {
 	if (!ppNewPart)
@@ -109,16 +119,14 @@ size_t input_part(PART** ppNewPart, size_t count)
 
 	system("cls");
 
-	PART part = { 0 };	// 입력을 처리할 임시 변수
-	printf("사원번호를 입력하세요 >>> ");
+	PART part = { 0 };	// 생성을 처리할 임시 변수
+	printf("Department 번호를 CREATE하세요 >>> ");
 	scanf("%hu", &part.id);
 
-	char tmp; scanf("%c", &tmp); // 입력낭비버퍼 청소하기
+	CLEAR_BUFFER;
 
-	printf("사원 이름을 입력하세요 >>> ");
-	fgets(part.name, MAX_NAME-1, stdin);
-	int len = strlen(part.name);
-	part.name[len - 1] = '\n'; // \n을 \0으로 바꿔서 줄바꿈이 발생하는 상황을 제거
+	printf("Department 이름을 CREATE하세요 >>> ");
+	input(part.name, MAX_NAME - 1);
 
 	PART* pNewPart = NULL;
 	size_t new_count = count + 1;
@@ -137,7 +145,7 @@ size_t input_part(PART** ppNewPart, size_t count)
 	if (pOldPart) //  질문!!!!!!!!!
 	{
 		// 새 배열에 기존의 배열을 그대로 복사한다.
-		// 마지막에 한칸이 남음, 그건 새로 입력된 part에 할당된다
+		// 마지막에 한칸이 남음, 그건 새로 CREATE된 part에 할당된다
 
 		// memcpy(dest, src, size)는 메모리 블럭을 src에서 dest로 size만큼 복사한다.
 		memcpy(pNewPart, pOldPart, sizeof(PART) * count);
@@ -152,8 +160,54 @@ size_t input_part(PART** ppNewPart, size_t count)
 	return new_count;
 }
 
+size_t input_part_insert(PART** ppNewPart, size_t count, int pos)
+{
+    if (!ppNewPart) return 0;
+
+    PART* pOldPart = *ppNewPart;
+    system("cls");
+
+    PART part = { 0 };
+    printf("EMPLOYEE 번호를 CREATE하세요 >>> ");
+    scanf("%hu", &part.id);
+    CLEAR_BUFFER;
+
+    printf("EMPLOYEE 이름을 CREATE하세요 >>> ");
+    input(part.name, MAX_NAME - 1);
+
+    // clamp pos
+    if (pos < 0) pos = 0;
+    if (pos > (int)count) pos = (int)count;
+
+    size_t new_count = count + 1;
+    PART* pNewPart = (PART*)malloc(sizeof(PART) * new_count);
+    if (!pNewPart) return count;
+
+    // copy elements before pos
+    if (pOldPart && pos > 0) {
+        memcpy(pNewPart, pOldPart, sizeof(PART) * pos);
+    }
+
+    // insert new element
+    pNewPart[pos] = part;
+
+    // copy elements after pos (count - pos elements)
+    if (pOldPart && (count - pos) > 0) {
+        memcpy(pNewPart + pos + 1, pOldPart + pos, sizeof(PART) * (count - pos));
+    }
+
+    free(pOldPart);
+    *ppNewPart = pNewPart;
+    return new_count;
+}
+
 void print_part(PART* pPart, size_t count)
 {
+    if (!pPart || count == 0) {
+        printf("No departments to show.\n");
+        _getch();
+        return;
+    }
 	system("cls");
 	for (size_t i = 0; i < count; i++) {
 		printf("%d\t%s\n", pPart[i].id, pPart[i].name);

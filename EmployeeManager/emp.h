@@ -12,7 +12,20 @@
 #define LINK_FILE "link.dat"
 #define EMPT_FILE "employee.dat"
 
+#define EMPLOYEE_TITLE 사원
+#define DEPARTMENT 부서
+#define RANK_TITLE 직급
+#define INFORMATION 정보
+
+#define CREATE 입력
+#define READ 조회
+#define UPDATE 수정
+#define DELETE 삭제
+
 #define MAX_NAME 50
+
+#define CLEAR_SCREEN system("cls")
+#define CLEAR_BUFFER while (getchar() != '\n')	// 입력 버퍼 청소하기
 
 
 typedef unsigned short ushort; // 0~ 65535
@@ -55,3 +68,11 @@ int select_menu();
 void print_part(PART* pPart, size_t count);
 
 size_t input_part(PART** ppNewPart, size_t count);
+
+/// <summary> takes an input fom user and stores it the designated buffer
+/// </summary>/// <param name="buffer"></param>/// <param name="len"></param>
+void input(char* buffer, size_t len);
+
+
+/// <summary>/// inserts department title at desired index /// </summary>/// <param name="ppNewPart"></param>/// <param name="count"></param>/// <param name="pos"></param>/// <returns></returns>
+size_t input_part_insert(PART** ppNewPart, size_t count, int pos);
