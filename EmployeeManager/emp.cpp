@@ -197,44 +197,45 @@ size_t input_base(BASE_INFO** ppData, size_t count, const char* type)
 	return new_count;
 }
 
-size_t input_base_insert(PART** ppNewPart, size_t count, int pos)
+size_t input_base_insert(BASE_INFO** ppNewBase, size_t count, int pos, const char* type)
 {
-	if (!ppNewPart) return 0;
+	if (!ppNewBase) return 0;
 
-	PART* pOldPart = *ppNewPart;
+	BASE_INFO* pOldBase = *ppNewBase;
 	system("cls");
 
-	PART part = { 0 };
-	printf("EMPLOYEE 번호를 CREATE하세요 >>> ");
-	scanf("%hu", &part.id);
-	CLEAR_BUFFER;
+	BASE_INFO base = { 0 };
+	printf("%s 번호를 생성하세요 >>> ", type);
+	scanf("%hu", &base.id);
+	// 입력낭비버퍼 청소하기
+	getchar();
 
-	printf("EMPLOYEE 이름을 CREATE하세요 >>> ");
-	input(part.name, MAX_NAME - 1);
+	printf("%s 이름을 생성하세요 >>> ", type);
+	input(base.name, MAX_NAME - 1);
 
 	// clamp pos
 	if (pos < 0) pos = 0;
 	if (pos > (int)count) pos = (int)count;
 
 	size_t new_count = count + 1;
-	PART* pNewBase = (PART*)malloc(sizeof(PART) * new_count);
-	if (!pNewPart) return count;
+	BASE_INFO* pNewBase = (BASE_INFO*)malloc(sizeof(BASE_INFO) * new_count);
+	if (!pNewBase) return count;
 
 	// copy elements before pos
-	if (pOldPart && pos > 0) {
-		memcpy(pNewPart, pOldPart, sizeof(PART) * pos);
+	if (pOldBase && pos > 0) {
+		memcpy(pNewBase, pOldBase, sizeof(BASE_INFO) * pos);
 	}
 
 	// insert new element
-	pNewBase[pos] = part;
+	pNewBase[pos] = base;
 
 	// copy elements after pos (count - pos elements)
-	if (pOldPart && (count - pos) > 0) {
-		memcpy(pNewPart + pos + 1, pOldPart + pos, sizeof(PART) * (count - pos));
+	if (pOldBase && (count - pos) > 0) {
+		memcpy(pNewBase + pos + 1, pOldBase + pos, sizeof(BASE_INFO) * (count - pos));
 	}
 
-	free(pOldPart);
-	*ppNewPart = pNewBase;
+	free(pOldBase);
+	*ppNewBase = pNewBase;
 	return new_count;
 }
 
