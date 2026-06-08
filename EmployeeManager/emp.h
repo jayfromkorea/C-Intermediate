@@ -14,11 +14,11 @@
 
 #define PART_FILE "part.dat"
 #define RANK_FILE "rank.dat"
-#define EMPT_FILE "employee.dat"
+#define EMPL_FILE "employee.dat"
 
 #define EMPLOYEE_TITLE 사원
-#define DEPARTMENT 부서
-#define RANK_TITLE 직급
+#define DEPARTMENT "부서"
+#define RANK_TITLE "직급"
 #define INFORMATION 정보
 
 #define CREATE 입력
@@ -28,7 +28,7 @@
 
 #define MAX_NAME 50
 
-#define FREE(x) if (pEmp){ free(x); x = NULL; }
+// #define FREE(x) if (x) free(x)
 
 
 typedef unsigned short ushort; // 0~ 65535
@@ -82,14 +82,23 @@ size_t input_base_insert(BASE_INFO** ppNewBase, size_t count, int pos, const cha
 /// <param name="pPart"></param>
 /// <param name="count"></param>
 /// <returns></returns>
-size_t save_data(BASE_INFO pData[], size_t count, const char* filename);
+size_t save_data_base_info(BASE_INFO pData[], size_t count, const char* filename);
+size_t save_data_empl_info(EMPLOYEE pData[], size_t count);
 
 size_t load_data(BASE_INFO** ppData, const char* filename);
 
 long long get_file_size(const char* filename);
 
-int find_base_by_id(BASE_INFO pData[], size_t count, ushort id);
+int search_base_by_id(BASE_INFO pData[], size_t count, ushort id);
 
 void update_base(BASE_INFO* pData, size_t count, const char* type);
 
 size_t delete_base(BASE_INFO** ppData, size_t count, const char* type);
+
+void input(char* buffer, size_t len);
+
+size_t input_employee(EMPLOYEE** ppEmp, size_t emp_count, BASE_INFO* pPart, size_t part_count, BASE_INFO* pRank, size_t rank_count);
+void print_empl_info(EMPLOYEE* pEmp, size_t count, BASE_INFO* pPart, size_t part_count, BASE_INFO* pRank, size_t rank_count);
+size_t delete_empl(EMPLOYEE** ppEmp, size_t count);
+size_t load_empl_data(EMPLOYEE** ppEmp);
+int search_empl_by_id(EMPLOYEE* pEmp, size_t count, ushort id);
