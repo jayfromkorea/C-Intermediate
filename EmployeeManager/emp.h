@@ -14,7 +14,7 @@
 
 #define PART_FILE "part.dat"
 #define RANK_FILE "rank.dat"
-#define EMPT_FILE "employee.dat"
+#define EMPL_FILE "employee.dat"
 
 #define EMPLOYEE_TITLE 사원
 #define DEPARTMENT 부서
@@ -28,7 +28,7 @@
 
 #define MAX_NAME 50
 
-#define FREE(x) if (pEmp){ free(x); x = NULL; }
+#define FREE(x) if (x){ free(x); x = NULL; }
 
 
 typedef unsigned short ushort; // 0~ 65535
@@ -48,7 +48,7 @@ typedef struct {
 	char name[MAX_NAME];
 } BASE_INFO;
 
-typedef BASE_INFO BASE_INFO;
+typedef BASE_INFO PART;
 typedef BASE_INFO RANK;
 
 //// 직급 정보
@@ -71,6 +71,10 @@ void show_menu();
 /// <returns> 선택된 메뉴의 값 </returns>
 int select_menu();
 
+size_t input_employee(EMPLOYEE** ppEmp, size_t count, PART* pPart, size_t part_count, RANK* pRank, size_t rank_count);
+
+
+
 void print_base(BASE_INFO pData[], size_t count, const char* type, bool isAnyKey=true);
 
 size_t input_base(BASE_INFO** ppData, size_t count, const char* type);
@@ -82,13 +86,22 @@ size_t input_base(BASE_INFO** ppData, size_t count, const char* type);
 /// <param name="count"></param>
 /// <returns></returns>
 size_t save_data(BASE_INFO pData[], size_t count, const char* filename);
+size_t save_employee(EMPLOYEE* pEmp, size_t emp_count);
 
 size_t load_data(BASE_INFO** ppData, const char* filename);
+size_t load_employee(EMPLOYEE** ppEmp);
 
-long long get_file_size(const char* filename);
+fpos_t get_file_size(const char* filename);
 
+long long find_employee_by_id(EMPLOYEE pEmp[], size_t count, ushort id);
 int find_base_by_id(BASE_INFO pData[], size_t count, ushort id);
 
+void update_employee(EMPLOYEE pEmp[], size_t count, PART pPart[], size_t part_count, RANK pRank[], size_t rank_count);
 void update_base(BASE_INFO* pData, size_t count, const char* type);
+const char* find_base_name_by_id(BASE_INFO* pData, size_t count, ushort id);
+void print_employee(EMPLOYEE* pEmp, size_t count, PART* pPart, size_t part_count, RANK* pRank, size_t rank_count, bool isAnyKey = true);
 
 size_t delete_base(BASE_INFO** ppData, size_t count, const char* type);
+size_t delete_employee(EMPLOYEE** ppEmp, size_t count, BASE_INFO pPart[], size_t part_count, BASE_INFO pRank[], size_t rank_count);
+
+

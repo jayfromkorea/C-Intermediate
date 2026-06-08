@@ -16,22 +16,22 @@ void show_menu()
 	printf("===== EMPLOYEE 관리(ver 1.0)=====\n");
 	printf("========================\n\n");
 
-	printf("a. EMPLOYEE_TITLEINFORMATION CREATE\n");
-	printf("b. EMPLOYEE_TITLEINFORMATION READ\n");
-	printf("c. EMPLOYEE_TITLEINFORMATION UPDATE\n");
-	printf("d. EMPLOYEE_TITLEINFORMATION DELETE\n");
+	printf("a. 사원정보 생성\n");
+	printf("b. 사원정보 조회\n");
+	printf("c. 사원정보 수정\n");
+	printf("d. 사원정보 삭제\n");
 	printf("========================\n\n");
 
-	printf("e. INFORMATION CREATE\n");
-	printf("f. DEPARTMENT READ\n");
-	printf("g. DEPARTMENT UPDATE\n");
-	printf("h. DEPARTMENT DELETE\n");
+	printf("e. 부서정보 생성\n");
+	printf("f. 부서정보 조회\n");
+	printf("g. 부서정보 수정\n");
+	printf("h. 부서정보 삭제\n");
 	printf("========================\n\n");
 
-	printf("i. RANK CREATE\n");
-	printf("j. RANK READ\n");
-	printf("k. RANK UPDATE\n");
-	printf("l. RANK DELETE\n");
+	printf("i. 직급정보 생성\n");
+	printf("j. 직급정보 조회\n");
+	printf("k. 직급정보 조회\n");
+	printf("l. 직급정보 삭제\n");
 	printf("========================\n\n");
 
 	printf("x. 프로그램 종료\n");
@@ -62,7 +62,8 @@ int employee_procedure() {
 
 	// 저장된 파일로부 배열데이터 로드하기
 	part_count = load_data(&pPart, PART_FILE);
-	part_count = load_data(&pRank, RANK_FILE);
+	rank_count = load_data(&pRank, RANK_FILE);
+	emp_count = load_employee(&pEmp);
 
 	int menu = 0;
 
@@ -76,11 +77,22 @@ int employee_procedure() {
 		// 선택된 메뉴에 따른 기능 수행
 		switch (menu)
 		{
-			case 'a':
-			case 'b':
-			case 'c':
-			case 'd':break;
-
+			case 'a': // 사원 추가
+				emp_count = input_employee(&pEmp, emp_count, pPart, part_count, pRank, rank_count);
+				save_employee(pEmp, emp_count);
+			case 'b': // 사원정보 조회
+				print_employee(pEmp, emp_count, pPart, part_count, pRank, rank_count);
+				break;
+			case 'c': // 사원정보 수정
+				update_employee(pEmp, emp_count, pPart, part_count, pRank, rank_count);
+				save_employee(pEmp, emp_count);
+				print_employee(pEmp, emp_count, pPart, part_count, pRank, rank_count);
+				break;
+			case 'd': // 사원정보 삭제
+				emp_count = delete_employee(&pEmp, emp_count, pPart, part_count, pRank, rank_count);
+				save_employee(pEmp, emp_count);
+				print_employee(pEmp, emp_count, pPart, part_count, pRank, rank_count);
+				break;
 			case 'e':	// 부서 입력
 				part_count = input_base(&pPart, part_count, S_PART);
 				save_data(pPart, part_count, PART_FILE);	// 실시간 저장
@@ -332,10 +344,12 @@ size_t save_data(BASE_INFO pData[], size_t count, const char* filename)
 
 	fclose(fp);
 
+
+
 	return ret;
 }
 
-long long get_file_size(const char* filename) {
+fpos_t get_file_size(const char* filename) {
 	FILE* fp = NULL;
 	fp = fopen(filename, "r");
 	if (!fp) {
@@ -350,7 +364,11 @@ long long get_file_size(const char* filename) {
 	fseek(fp, 0, SEEK_END);
 
 	// 파일에서의 커서의 현재 위치를 알려줌
-	long pos = ftell(fp);
+	// long pos = ftell(fp); // standard: 64비트 환경에서 오류가 발생할 가능성이 있음
+	
+	fpos_t pos;
+	fgetpos(fp, &pos);
+
 	fclose(fp);
 
 	return pos;
@@ -367,7 +385,7 @@ size_t load_data(BASE_INFO** ppData, const char* filename)
 	if (!pNewPart) return 0;
 
 	size_t count = 0;
-	FILE* fp = fopen(PART_FILE, "r");
+	FILE* fp = fopen(filename, "r");
 	if (fp)
 	{
 		fread(pNewPart, filesize, 1, fp);
@@ -412,4 +430,218 @@ int find_base_by_id(BASE_INFO pData[], size_t count, ushort id)
 	}
 
 	return -1;
+}
+
+
+size_t input_employee(EMPLOYEE** ppEmp, size_t count, PART* pPart, size_t part_count, RANK* pRank, size_t rank_count)
+{
+	if (!ppEmp) return count;
+	if (!pPart || !pRank) return count;
+
+	system("cls");
+
+	EMPLOYEE tmp = { 0 };
+	printf("사원번호를 입력하세여 >>> ");
+	scanf("%hu", &tmp.id);
+
+	// 입력낭비버퍼 청소하기
+	getchar();
+
+	printf("사원명를 입력하세여 >>> ");
+	fgets(tmp.name, MAX_NAME, stdin);
+
+	tmp.name[strlen(tmp.name) - 1] = '\0';
+
+	// 부서 정보 출력
+	print_base(pPart, part_count, S_PART, false);
+	printf("부서 코드를 입력하시오 >>> ");
+	scanf("%hu", &tmp.part);
+
+
+
+	// 직급 정보 출력
+	print_base(pRank, rank_count, S_RANK, false);
+	printf("직급 코드를 입력하시오 >>> ");
+	scanf("%hu", &tmp.rank);
+
+	EMPLOYEE* pOldEmp = *ppEmp;
+
+	size_t new_count = count + 1;
+	size_t new_size = sizeof(EMPLOYEE) * new_count;
+	EMPLOYEE* pEmp = (EMPLOYEE*)malloc(new_size);
+	if (!pEmp) return count;
+
+	if (pOldEmp) {
+		memcpy(pEmp, pOldEmp, sizeof(EMPLOYEE) * count);
+		FREE(pOldEmp);
+	}
+
+	memcpy(pEmp + count, &tmp, sizeof(EMPLOYEE));
+	*ppEmp = pEmp;
+
+	return new_count;
+}
+
+const char* find_base_name_by_id(BASE_INFO* pData, size_t count, ushort id)
+{
+	if (!pData) return NULL;
+
+	for (size_t i = 0; i < count; i++)
+	{
+		if (pData[i].id == id) return pData[i].name;
+	}
+
+	return NULL;
+}
+
+void print_employee (EMPLOYEE* pEmp, size_t count, PART* pPart, size_t part_count, RANK* pRank, size_t rank_count, bool isAnyKey)
+{
+	if (!pEmp || !pPart || !pRank) return;
+
+	system("cls");
+
+	// Title 출력
+	printf("사원번호\t사원이름\t부서\t직급\n");
+	printf("=====================================\n");
+
+	for (size_t i = 0; i < count; i++) {
+		printf("%8hu\t%s\t", pEmp[i].id, pEmp[i].name);
+
+		const char* base_name = find_base_name_by_id(pPart, part_count, pEmp[i].part);
+		printf("%s\t", base_name ? base_name : "없음");
+
+		base_name = find_base_name_by_id(pRank, rank_count, pEmp[i].rank);
+		printf("%s\n", base_name ? base_name : "없음");
+	}
+	printf("=======================\n");
+
+	if (isAnyKey) {
+		printf("계속하려면 아무키나 누르세요...\n");
+		_getch();
+	}
+
+}
+
+size_t save_employee(EMPLOYEE* pEmp, size_t emp_count)
+{
+	if (!pEmp) return 0;
+
+	FILE* fp = fopen(EMPL_FILE, "w");
+	if (!fp) return 0;
+
+	 size_t ret = fwrite(pEmp, sizeof(EMPLOYEE), emp_count, fp);
+
+	fclose(fp);
+
+	return ret;
+}
+
+size_t load_employee(EMPLOYEE** ppEmp)
+{
+	if (!ppEmp) return 0;
+
+	size_t size = get_file_size(EMPL_FILE);
+	if (!size) return 0;
+
+	EMPLOYEE* pEmp = (EMPLOYEE*)malloc(size);
+	if (!pEmp) return 0;
+
+	FILE* fp = fopen(EMPL_FILE, "r");
+	if (!fp)
+	{
+		FREE(pEmp);
+		return 0;
+	}
+	size_t count = size / sizeof(EMPLOYEE);
+	size_t ret = fread(pEmp, sizeof(EMPLOYEE), count, fp);
+
+	fclose(fp);
+	*ppEmp = pEmp;
+
+	return ret;
+}
+
+long long find_employee_by_id(EMPLOYEE pEmp[], size_t count, ushort id)
+{
+	if (!pEmp) return -1;
+	for (long long i = 0; i < count; i++)
+	{
+		if (pEmp[i].id == id) return i;
+	}
+
+	return -1;
+}
+
+void update_employee(EMPLOYEE pEmp[], size_t count, PART pPart[], size_t part_count, RANK pRank[], size_t rank_count)
+{
+	if (!pEmp || !pPart || !pRank) return;
+	// 수정할 정보 출력
+	print_employee(pEmp, count, pPart, part_count, pRank, rank_count, false);
+
+	printf("\n\n수정할 사원코드를 입력하세요 >>> ");
+	ushort code;
+	scanf("%hu", &code);
+
+
+	long long index = find_employee_by_id(pEmp, count, code);
+	if (index < 0) return;
+
+	EMPLOYEE tmp = { 0 };
+	tmp.id = code;
+	
+	// 입력낭비버퍼 청소하기
+	getchar();
+
+	printf("사원명을 입력하세요 >>> ");
+	fgets(tmp.name, MAX_NAME, stdin);
+	tmp.name[strlen(tmp.name) - 1] = '\0';
+
+	print_base(pPart, part_count, S_PART, false);
+	printf("\n 새로운 부서코드를 입력하세요 >>> ");
+	scanf("%hu", &tmp.part);
+	
+
+	print_base(pRank, rank_count, S_RANK, false);
+	printf("\n 새로운 직급코드를 입력하세요 >>> ");
+	scanf("%hu", &tmp.rank);
+
+	// 메모리 복사로 한번에 수정
+	memcpy(pEmp + index, &tmp, sizeof(EMPLOYEE));
+
+	return;
+}
+
+size_t delete_employee(EMPLOYEE** ppEmp, size_t count, BASE_INFO pPart[], size_t part_count, BASE_INFO pRank[], size_t rank_count)
+{
+	if (!ppEmp || !pPart || !pRank) return count;
+
+	print_employee(*ppEmp, count, pPart, part_count, pRank, rank_count, false);
+
+	printf("\n\n삭제할 사원코드를 입력하세요 >>> ");
+	ushort code;
+	scanf("%hu", &code);
+
+	size_t new_count = count - 1;
+	if (!new_count) {
+		FREE(*ppEmp);
+		return 0;
+	}
+
+	size_t new_size = sizeof(EMPLOYEE) * new_count;
+	EMPLOYEE* pEmp = (EMPLOYEE*)malloc(new_size);
+	if (!pEmp) return count;
+
+	EMPLOYEE* pOldEmp = *ppEmp;
+	for (size_t i = 0, j = 0; i < count; i++)
+	{
+		if (pOldEmp[i].id != code)
+		{
+			memcpy(pEmp + j, pOldEmp + i, sizeof(EMPLOYEE));
+			j++;
+		}
+	}
+
+	*ppEmp = pEmp;
+	FREE(pOldEmp);
+	return new_count;
 }
