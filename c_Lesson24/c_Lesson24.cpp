@@ -20,12 +20,20 @@ int compare_id(const void* a, const void* b)
     return p1->id > p2->id ? 1 : -1;
 }
 
-int compare_id(const void* a, const void* b)
+int compare_name(const void* a, const void* b)
 {
     SCORE* p1 = (SCORE*)a;
     SCORE* p2 = (SCORE*)b;
 
     return strcmp(p1->name, p2->name);
+}
+
+int compare_score(const void* a, const void* b)
+{
+    SCORE* p1 = (SCORE*)a;
+    SCORE* p2 = (SCORE*)b;
+
+    return p1->score > p2->score ? 1 : -1;
 }
 
 int add(int a, int b)
@@ -84,6 +92,12 @@ int main()
         {1, "joy", 50},
         {1, "jay", 79},
     };
+
+    qsort(scorces, 3, sizeof(SCORE), compare_id);
+
+    // 배열의 내용 출력하기
+
+    // CALLBACK 
 
     return 0;
 }
